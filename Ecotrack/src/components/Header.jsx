@@ -1,23 +1,51 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  Box,
+} from "@mui/material";
 
-const Header = () => {
+const Header = React.memo(() => {
+  const location = useLocation();
+
   return (
-    <header style={{ padding: "1rem", background: "#220594" }}>
-      <h2>EcoTrack</h2>
-      <nav>
-        <Link to="/" style={{ marginRight: "1rem", color: "white" }}>
-          Dashboard
-        </Link>
-        <Link to="/logs" style={{ marginRight: "1rem", color: "white" }}>
-          Logs
-        </Link>
-        <Link to="/login" style={{ marginRight: "1rem", color: "white" }}>
-          Login
-        </Link>
-      </nav>
-    </header>
+    <AppBar position="static">
+      <Toolbar>
+        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          EcoTrack - Carbon Footprint Tracker
+        </Typography>
+        <Box sx={{ display: "flex", gap: 2 }}>
+          <Button
+            color="inherit"
+            component={Link}
+            to="/"
+            variant={location.pathname === "/" ? "outlined" : "text"}
+          >
+            Dashboard
+          </Button>
+          <Button
+            color="inherit"
+            component={Link}
+            to="/logs"
+            variant={location.pathname === "/logs" ? "outlined" : "text"}
+          >
+            Logs
+          </Button>
+          <Button
+            color="inherit"
+            component={Link}
+            to="/login"
+            variant={location.pathname === "/login" ? "outlined" : "text"}
+          >
+            Login
+          </Button>
+        </Box>
+      </Toolbar>
+    </AppBar>
   );
-};
+});
 
 export default Header;

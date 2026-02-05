@@ -1,42 +1,69 @@
-import Header from "./components/header";
-import Logs from "./pages/logs";
-import Dashboard from "./pages/dashboard";
-import { logs } from "./data/logs";
+import React, { Suspense } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Login from "./pages/login";
+import { Provider } from "react-redux";
+import store from "./store/store";
+import Header from "./components/Header";
 import ProtectedRoute from "./routes/ProtectedRoute";
-import DashboardLayout from "./pages/dashboardLayout";
-import DashboardAnalytics from "./pages/dashboardAnalytic";
-import DashboardSummary from "./pages/dashboardSummary";
+import { Box, CircularProgress, Typography } from "@mui/material";
+
+// Lazy load components for code splitting
+const Login = React.lazy(() => import("./pages/login"));
+const Logs = React.lazy(() => import("./pages/Logs"));
+const DashboardLayout = React.lazy(() => import("./pages/DashboardLayout"));
+const DashboardAnalytics = React.lazy(() => import("./pages/dashboardAnalytic"));
+const DashboardSummary = React.lazy(() => import("./pages/DashboardSummary"));
+
+const LoadingFallback = () => (
+  <Box
+    sx={{
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      minHeight: "200px",
+    }}
+  >
+    <CircularProgress />
+    <Typography variant="body1" sx={{ mt: 2 }}>
+      Loading...
+    </Typography>
+  </Box>
+);
+
 const App = () => {
   return (
-    <div>
+    <Provider store={store}>
       <BrowserRouter>
-        <Header title="EcoTrack - Carbon Footprint Tracker Experiment 1" />
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <DashboardLayout />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/login" element={<Login />} />
-          <Route index element={<DashboardSummary />} />
-          <Route path="analytics" element={<DashboardAnalytics />} />
-          <Route path="summary" element={<DashboardSummary />} />
-          <Route
-            path="/logs"
-            element={
-              <ProtectedRoute>
-                <Logs logs={logs} />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
+        <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+          <Header />
+          <Box component="main" sx={{ flexGrow: 1 }}>
+            <Suspense fallback={<LoadingFallback />}>
+              <Routes>
+                <Route
+                  path="/"
+                  element={
+                    <ProtectedRoute>
+                      <DashboardLayout />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route path="/login" element={<Login />} />
+                <Route
+                  path="/logs"
+                  element={
+                    <ProtectedRoute>
+                      <Logs logs={[]} />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route path="analytics" element={<DashboardAnalytics />} />
+                <Route path="summary" element={<DashboardSummary />} />
+              </Routes>
+            </Suspense>
+          </Box>
+        </Box>
       </BrowserRouter>
-    </div>
+    </Provider>
   );
 };
 
